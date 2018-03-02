@@ -3,6 +3,7 @@ $(document).ready(function () {
     // Trivia data object
     var triviaGame = {
         answered: false,
+        // Questions. All a1 answers are the correct answer.
         question1: {
             q: "What engineering company designed and built the Lunar Module (the part that actually landed on the moon)?",
             a1: "Grumman",
@@ -39,6 +40,29 @@ $(document).ready(function () {
             a4: "Jim Lovell",
         },
         questionWriter: function (question) {
+            // Shuffle button divs. Adapted from https://stackoverflow.com/questions/18508742/multiple-ids-in-a-single-javascript-click-event
+            $("#answers-div").each(function () {
+                var butts = $(this).find('button');
+                for (var i = 0; i < butts.length; i++) {
+                    $(butts[i]).remove();
+                }
+                // Fisher-Yates shuffle algorithm
+                var i = butts.length;
+                if (i == 0) {
+                    return false;
+                }
+                while (--i) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var tempi = butts[i];
+                    var tempj = butts[j];
+                    butts[i] = tempj;
+                    butts[j] = tempi;
+                }
+                for (var i = 0; i < butts.length; i++) {
+                    $(butts[i]).appendTo(this);
+                }
+            });
+            // Push question and answer text to the document
             $("#question").text(question.q);
             $("#a1").text(question.a1);
             $("#a2").text(question.a2);
