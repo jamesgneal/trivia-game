@@ -76,9 +76,7 @@ $(document).ready(function () {
             $("#a1").removeClass("btn-secondary").addClass("btn-success");
         },
         nextQuestion: function(number) {
-            var currentQuestion = "triviaGame.question" + number;
-            currentQuestion = currentQuestion.replace(/['"]+/g,'');
-            console.log(currentQuestion);
+            var currentQuestion = triviaGame["question" + number];
             triviaGame.questionWriter(currentQuestion);
         }
 
