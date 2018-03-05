@@ -43,6 +43,7 @@ $(document).ready(function () {
         questionsWrong: 0,
         answered: false,
         buttonTimeOut: null,
+        answerTimeOut: null,
         questionWriter: function (question) {
             // Shuffle button divs. Adapted from https://stackoverflow.com/questions/18508742/multiple-ids-in-a-single-javascript-click-event
             $("#answers-div").each(function () {
@@ -74,12 +75,37 @@ $(document).ready(function () {
             $("#a4").text(question.a4);
             this.answered = false;
         },
-        nextQuestion: function(number) {
-            $(".btn").removeClass("btn-success btn-danger");
+        nextQuestion: function (number) {
+            $(".btn").removeClass("btn-success btn-danger btn-warning");
+            $("#message-area").empty();
             var currentQuestion = triviaGame["question" + number];
             this.questionWriter(currentQuestion);
+            this.buttonTimeOut = setTimeout(this.wrong, 1000 * 5);
         },
-        gameStart: function() {
+        right: function () {
+            triviaGame.questionsRight++;
+            triviaGame.questionCounter++;
+            $("#message-area").html(
+                `<p>Correct!</p>`
+            )
+            var tempNext = function () {
+                triviaGame.nextQuestion(triviaGame.questionCounter);
+            }
+            this.answerTimeOut = setTimeout(tempNext, 1000 * 3);
+        },
+        wrong: function () {
+            $("#a1").addClass("btn-warning");
+            triviaGame.questionCounter++;
+            triviaGame.questionsWrong++;
+            $("#message-area").html(
+                `<p>Incorrect!</p>`
+            )
+            var tempNext = function () {
+                triviaGame.nextQuestion(triviaGame.questionCounter);
+            }
+            this.answerTimeOut = setTimeout(tempNext, 1000 * 3);
+        },
+        gameStart: function () {
             // Clear the game variables (for restart) and display the game area (for start)
             this.questionCounter = 1;
             this.questionsRight = 0;
@@ -89,13 +115,34 @@ $(document).ready(function () {
             $("#control-buttons").empty();
             // Load the first question
             this.questionWriter(triviaGame.question1);
+            // Start the timer
+            this.buttonTimeOut = setTimeout(this.wrong, 1000 * 5);
 
         },
-        openScreen: function() {
+        openScreen: function () {
             $("#question, #answers-div").hide();
             $("#control-buttons").html(
                 `<button id="start-game" class="btn btn-large btn-primary">START GAME</button>`
             )
+        },
+        timer: function () {
+            if (!clockRunning) {
+                intervalId = setInterval(stopwatch.count, 1000);
+                clockRunning = true;
+            }
+        },
+        count: function () {
+
+            // DONE: increment time by 1, remember we cant use "this" here.
+            stopwatch.time++;
+
+            // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
+            //       and save the result in a variable.
+            var converted = stopwatch.timeConverter(stopwatch.time);
+            console.log(converted);
+
+            // DONE: Use the variable we just created to show the converted time in the "display" div.
+            $("#display").text(converted);
         },
 
     } // End trivia data object =======================================================================================
@@ -109,23 +156,21 @@ $(document).ready(function () {
         var clickedId = $($this).attr("id");
 
         if (!triviaGame.answered) {
-            triviaGame.questionCounter++;
+            triviaGame.answered += true;
+            clearTimeout(triviaGame.buttonTimeOut);
             if (clickedId === "a1") {
                 $($this).addClass("btn-success");
-                triviaGame.questionsRight++;
-                triviaGame.answered += true;
-                triviaGame.nextQuestion(triviaGame.questionCounter);
-
+                triviaGame.right();
             }
             if (clickedId != "a1") {
                 $($this).addClass("btn-danger");
-                triviaGame.questionsWrong++;
+                triviaGame.wrong();
             }
         }
     });
 
     // Start game click
-    $("#start-game").click( function() {
+    $("#start-game").click(function () {
         triviaGame.gameStart();
     });
 });
