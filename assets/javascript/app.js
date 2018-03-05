@@ -38,12 +38,17 @@ $(document).ready(function () {
             a3: "John Glenn",
             a4: "Jim Lovell",
         },
+        questionTime: 10,
+        currentTime: 10,
+        answerTime: 5,
         questionCounter: 1,
         questionsRight: 0,
         questionsWrong: 0,
         answered: false,
         buttonTimeOut: null,
         answerTimeOut: null,
+        timerRunning: false,
+        intervalHolder: null,
         questionWriter: function (question) {
             // Shuffle button divs. Adapted from https://stackoverflow.com/questions/18508742/multiple-ids-in-a-single-javascript-click-event
             $("#answers-div").each(function () {
@@ -78,11 +83,17 @@ $(document).ready(function () {
         nextQuestion: function (number) {
             $(".btn").removeClass("btn-success btn-danger btn-warning");
             $("#message-area").empty();
-            var currentQuestion = triviaGame["question" + number];
-            this.questionWriter(currentQuestion);
-            this.buttonTimeOut = setTimeout(this.wrong, 1000 * 5);
+            if (this.questionCounter <= 10) {
+                var currentQuestion = triviaGame["question" + number];
+                this.questionWriter(currentQuestion);
+                this.timer();
+                this.buttonTimeOut = setTimeout(this.wrong, (1000 * triviaGame.questionTime));
+            } else {
+                this.endGame();
+            }
         },
         right: function () {
+            clearInterval(triviaGame.intervalHolder);
             triviaGame.questionsRight++;
             triviaGame.questionCounter++;
             $("#message-area").html(
@@ -94,6 +105,7 @@ $(document).ready(function () {
             this.answerTimeOut = setTimeout(tempNext, 1000 * 3);
         },
         wrong: function () {
+            clearInterval(triviaGame.intervalHolder);
             $("#a1").addClass("btn-warning");
             triviaGame.questionCounter++;
             triviaGame.questionsWrong++;
@@ -111,39 +123,33 @@ $(document).ready(function () {
             this.questionsRight = 0;
             this.questionsWrong = 0;
             this.answered = false;
-            $("#question, #answers-div").show();
+            $("#question, #answers-div, #timer-area").show();
             $("#control-buttons").empty();
             // Load the first question
             this.questionWriter(triviaGame.question1);
             // Start the timer
-            this.buttonTimeOut = setTimeout(this.wrong, 1000 * 5);
+            this.timer();
+            this.buttonTimeOut = setTimeout(this.wrong, 1000 * (triviaGame.questionTime));
 
         },
         openScreen: function () {
-            $("#question, #answers-div").hide();
+            $("#question, #answers-div, #timer-area").hide();
             $("#control-buttons").html(
                 `<button id="start-game" class="btn btn-large btn-primary">START GAME</button>`
             )
         },
         timer: function () {
-            if (!clockRunning) {
-                intervalId = setInterval(stopwatch.count, 1000);
-                clockRunning = true;
-            }
+            triviaGame.currentTime = 10;
+            $("#timer").text(triviaGame.currentTime);
+            triviaGame.intervalHolder = setInterval(triviaGame.count, 1000);
         },
         count: function () {
-
-            // DONE: increment time by 1, remember we cant use "this" here.
-            stopwatch.time++;
-
-            // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
-            //       and save the result in a variable.
-            var converted = stopwatch.timeConverter(stopwatch.time);
-            console.log(converted);
-
-            // DONE: Use the variable we just created to show the converted time in the "display" div.
-            $("#display").text(converted);
+            triviaGame.currentTime--;
+            $("#timer").text(triviaGame.currentTime);
         },
+        endGame: function () {
+            $("#question, #answers-div, #timer-area").hide();
+        }
 
     } // End trivia data object =======================================================================================
 
