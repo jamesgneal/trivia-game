@@ -42,27 +42,28 @@ $(document).ready(function () {
         questionsRight: 0,
         questionsWrong: 0,
         answered: false,
+        buttonTimeOut: null,
         questionWriter: function (question) {
             // Shuffle button divs. Adapted from https://stackoverflow.com/questions/18508742/multiple-ids-in-a-single-javascript-click-event
             $("#answers-div").each(function () {
-                var butts = $(this).find('button');
-                for (var i = 0; i < butts.length; i++) {
-                    $(butts[i]).remove();
+                var buttons = $(this).find('button');
+                for (var i = 0; i < buttons.length; i++) {
+                    $(buttons[i]).remove();
                 }
                 // Fisher-Yates shuffle algorithm
-                var i = butts.length;
+                var i = buttons.length;
                 if (i == 0) {
                     return false;
                 }
                 while (--i) {
                     var j = Math.floor(Math.random() * (i + 1));
-                    var tempi = butts[i];
-                    var tempj = butts[j];
-                    butts[i] = tempj;
-                    butts[j] = tempi;
+                    var tempi = buttons[i];
+                    var tempj = buttons[j];
+                    buttons[i] = tempj;
+                    buttons[j] = tempi;
                 }
-                for (var i = 0; i < butts.length; i++) {
-                    $(butts[i]).appendTo(this);
+                for (var i = 0; i < buttons.length; i++) {
+                    $(buttons[i]).appendTo(this);
                 }
             });
             // Push question and answer text to the document
