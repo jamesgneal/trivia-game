@@ -72,20 +72,38 @@ $(document).ready(function () {
             $("#a2").empty().text(question.a2);
             $("#a3").empty().text(question.a3);
             $("#a4").text(question.a4);
-            triviaGame.answered = false;
+            this.answered = false;
         },
         nextQuestion: function(number) {
             $(".btn").removeClass("btn-success btn-danger");
             var currentQuestion = triviaGame["question" + number];
-            triviaGame.questionWriter(currentQuestion);
-        }
+            this.questionWriter(currentQuestion);
+        },
+        gameStart: function() {
+            // Clear the game variables (for restart) and display the game area (for start)
+            this.questionCounter = 1;
+            this.questionsRight = 0;
+            this.questionsWrong = 0;
+            this.answered = false;
+            $("#question, #answers-div").show();
+            $("#control-buttons").empty();
+            // Load the first question
+            this.questionWriter(triviaGame.question1);
+
+        },
+        openScreen: function() {
+            $("#question, #answers-div").hide();
+            $("#control-buttons").html(
+                `<button id="start-game" class="btn btn-large btn-primary">START GAME</button>`
+            )
+        },
 
     } // End trivia data object =======================================================================================
 
-    // Load a question
-    triviaGame.questionWriter(triviaGame.question1);
+    // Load the start button
+    triviaGame.openScreen();
 
-    // Click a btn class
+    // Click in the answers-div
     $("#answers-div").on("click", ".btn", function () {
         var $this = this;
         var clickedId = $($this).attr("id");
@@ -103,7 +121,11 @@ $(document).ready(function () {
                 $($this).addClass("btn-danger");
                 triviaGame.questionsWrong++;
             }
-            //stop timer
         }
+    });
+
+    // Start game click
+    $("#start-game").click( function() {
+        triviaGame.gameStart();
     });
 });
