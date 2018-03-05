@@ -6,5 +6,5 @@ A simple trivia game using timers and intervals - do your best in the time alott
 1. HTML/CSS
 1. Bootstrap 4
 1. JavaScript
-1. jQuey
+1. jQuery
 1. Photoshop
