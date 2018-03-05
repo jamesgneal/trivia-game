@@ -83,7 +83,7 @@ $(document).ready(function () {
         nextQuestion: function (number) {
             $(".btn").removeClass("btn-success btn-danger btn-warning");
             $("#message-area").empty();
-            if (this.questionCounter <= 10) {
+            if (this.questionCounter <= 5) {
                 var currentQuestion = triviaGame["question" + number];
                 this.questionWriter(currentQuestion);
                 this.timer();
@@ -124,7 +124,7 @@ $(document).ready(function () {
             this.questionsWrong = 0;
             this.answered = false;
             $("#question, #answers-div, #timer-area").show();
-            $("#control-buttons").empty();
+            $("#control-buttons, #message-area").empty();
             // Load the first question
             this.questionWriter(triviaGame.question1);
             // Start the timer
@@ -149,6 +149,14 @@ $(document).ready(function () {
         },
         endGame: function () {
             $("#question, #answers-div, #timer-area").hide();
+            $("#control-buttons").html(
+                `<button id="start-game" class="btn btn-large btn-primary">RESTART GAME</button>`
+            )
+            $("#message-area").html(
+                `<h4>Game Stats</h4>
+                <p>Correct: ${triviaGame.questionsRight}</p>
+                <p>Incorrect: ${triviaGame.questionsWrong}</p>`
+            )
         }
 
     } // End trivia data object =======================================================================================
@@ -176,7 +184,7 @@ $(document).ready(function () {
     });
 
     // Start game click
-    $("#start-game").click(function () {
+    $("#control-buttons").on("click", "#start-game", function () {
         triviaGame.gameStart();
     });
 });
